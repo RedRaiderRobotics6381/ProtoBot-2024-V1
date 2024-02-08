@@ -5,8 +5,10 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class DriveToObjectCmd extends Command
@@ -105,6 +107,6 @@ public class DriveToObjectCmd extends Command
   @Override
   public void end(boolean interrupted)
   {
-    //RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
+    RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
   }
 }

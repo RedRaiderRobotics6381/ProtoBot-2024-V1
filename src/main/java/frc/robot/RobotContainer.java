@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,6 +40,7 @@ public class RobotContainer
   public static XboxController driverXbox = new XboxController(0);
   public static XboxController engineerXbox = new XboxController(1);
   private final SendableChooser<Command> autoChooser;
+  double lastTime = -1;
 
 
   /**
@@ -127,23 +129,7 @@ public class RobotContainer
     //                                                                                    0,
     //                                                                                    1));
     
-    // if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == true){
-    //   System.out.println("HighSpd");
-    //   Constants.Drivebase.Max_Speed_Multiplier = 1;
-    // }
-    
-    // if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == false){
-    //   System.out.println("MedSpd");
-    //   Constants.Drivebase.Max_Speed_Multiplier = 0.75;
-    // }
-    // if (RobotContainer.driverXbox.getRawButton(5) == false && RobotContainer.driverXbox.getRawButton(6) == true){
-    //   System.out.println("MedSpd");
-    //   Constants.Drivebase.Max_Speed_Multiplier = 0.75;
-    // }
-
-    // if (RobotContainer.driverXbox.getRawButton(5) == false && (RobotContainer.driverXbox.getRawButton(6) == false)){
-    //   Constants.Drivebase.Max_Speed_Multiplier = 0.5;
-    // }                                                                                       
+                                                                                     
     
     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
     // new JoystickButton(driverXbox,
@@ -173,5 +159,39 @@ public class RobotContainer
   public void setMotorBrake(boolean brake)
   {
     drivebase.setMotorBrake(brake);
+  }
+  
+  public void spencerButtons(){
+    if (driverXbox.getRawButton(5) == true && driverXbox.getRawButton(6) == true){
+      System.out.println("HighSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 1;
+    }
+    if (driverXbox.getRawButton(5) == true && driverXbox.getRawButton(6) == false){
+      System.out.println("MedSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    }
+    if (driverXbox.getRawButton(5) == false && driverXbox.getRawButton(6) == true){
+      System.out.println("MedSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    }
+
+    if (driverXbox.getRawButton(5) == false && (driverXbox.getRawButton(6) == false)){
+      //System.out.println("LowSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.5;
+    }
+  }
+
+  public void pulseRumble(){
+      if (lastTime != -1 && Timer.getFPGATimestamp() - lastTime <= 0.5) {
+        driverXbox.setRumble(XboxController.RumbleType.kBothRumble, .25);
+        //System.err.println("Rumble On");
+      }
+      else if (Timer.getFPGATimestamp() - lastTime <= 1.0) {
+        driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
+        //System.err.println("Rumble Off");
+      }      
+      else {
+        lastTime = Timer.getFPGATimestamp();
+      }
   }
 }
