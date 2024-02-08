@@ -15,13 +15,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
 import frc.robot.commands.Vision.DriveToObjectCmd;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
-import org.photonvision.PhotonCamera;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -37,7 +34,8 @@ public class RobotContainer
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                          "swerve/neo"));
 
-  private final PhotonCamera photonCamera = new PhotonCamera("photonvision");
+  //private final PhotonCamera photonCamera = new PhotonCamera("NoteCam");
+
   public static XboxController driverXbox = new XboxController(0);
   public static XboxController engineerXbox = new XboxController(1);
   private final SendableChooser<Command> autoChooser;
@@ -52,9 +50,9 @@ public class RobotContainer
     configureBindings();
     
     // Register Named Commands
-    NamedCommands.registerCommand("alignSpeaker", new DriveToAprilTagPosCmd(photonCamera, drivebase, 0, AprilTagConstants.speakerID));
-    NamedCommands.registerCommand("alignAmp", new DriveToAprilTagPosCmd(photonCamera, drivebase, 0, AprilTagConstants.ampID));
-    NamedCommands.registerCommand("alignNote", new DriveToObjectCmd(drivebase, 1));
+    //NamedCommands.registerCommand("alignSpeaker", new DriveToAprilTagPosCmd(photonCamera, drivebase, 0, AprilTagConstants.speakerID));
+    //NamedCommands.registerCommand("alignAmp", new DriveToAprilTagPosCmd(photonCamera, drivebase, 0, AprilTagConstants.ampID));
+    NamedCommands.registerCommand("alignNote", new DriveToObjectCmd(drivebase));
 
     // Build an auto chooser. This will use Commands.none() as the default option.
     autoChooser = AutoBuilder.buildAutoChooser();
@@ -76,14 +74,13 @@ public class RobotContainer
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(-driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND) *
-                                                            Constants.Drivebase.Max_Speed_Multiplier,
+                                                             Constants.Drivebase.Max_Speed_Multiplier,
         () -> MathUtil.applyDeadband(-driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND) *
-                                                            Constants.Drivebase.Max_Speed_Multiplier,
+                                                             Constants.Drivebase.Max_Speed_Multiplier,
         () -> MathUtil.applyDeadband(-driverXbox.getRawAxis(4), OperatorConstants.RIGHT_X_DEADBAND) *
-                                                                    Constants.Drivebase.Max_Speed_Multiplier);
-
-    drivebase.setDefaultCommand(
-        !RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
+                                                                     Constants.Drivebase.Max_Speed_Multiplier);
+    
+    drivebase.setDefaultCommand(!RobotBase.isSimulation() ? driveFieldOrientedAnglularVelocity : driveFieldOrientedDirectAngleSim);
   }
 
   /**
@@ -114,6 +111,7 @@ public class RobotContainer
 
 
     new JoystickButton(driverXbox, 4).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    new JoystickButton(driverXbox, 2).whileTrue(new DriveToObjectCmd(drivebase)); //changed to 1 from zero. 
 
     // new JoystickButton(driverXbox, 5).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
     //                                                                                    drivebase,
@@ -124,28 +122,28 @@ public class RobotContainer
     //                                                                                    0.0,
     //                                                                                    0.0));
 
-    new JoystickButton(driverXbox, 5).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
-                                                                                       drivebase,
-                                                                                       0,
-                                                                                       1));
+    // new JoystickButton(driverXbox, 8).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
+    //                                                                                    drivebase,
+    //                                                                                    0,
+    //                                                                                    1));
     
-    if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == true){
-      System.out.println("HighSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 1;
-    }
+    // if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == true){
+    //   System.out.println("HighSpd");
+    //   Constants.Drivebase.Max_Speed_Multiplier = 1;
+    // }
     
-    if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == false){
-      System.out.println("MedSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
-    }
-    if (RobotContainer.driverXbox.getRawButton(5) == false && RobotContainer.driverXbox.getRawButton(6) == true){
-      System.out.println("MedSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
-    }
+    // if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == false){
+    //   System.out.println("MedSpd");
+    //   Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    // }
+    // if (RobotContainer.driverXbox.getRawButton(5) == false && RobotContainer.driverXbox.getRawButton(6) == true){
+    //   System.out.println("MedSpd");
+    //   Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    // }
 
-    if (RobotContainer.driverXbox.getRawButton(5) == false && (RobotContainer.driverXbox.getRawButton(6) == false)){
-      Constants.Drivebase.Max_Speed_Multiplier = 0.5;
-    }                                                                                       
+    // if (RobotContainer.driverXbox.getRawButton(5) == false && (RobotContainer.driverXbox.getRawButton(6) == false)){
+    //   Constants.Drivebase.Max_Speed_Multiplier = 0.5;
+    // }                                                                                       
     
     //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
     // new JoystickButton(driverXbox,

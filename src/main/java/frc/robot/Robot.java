@@ -10,20 +10,14 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AprilTagConstants;
-//import frc.robot.subsystems.Secondary.ArmRotateSubsystem;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-
 import org.photonvision.PhotonCamera;
-import org.photonvision.common.hardware.VisionLEDMode;
-
-//import com.revrobotics.CANSparkMax;
-
 import swervelib.parser.SwerveParser;
 
 /**
@@ -36,11 +30,14 @@ public class Robot extends TimedRobot
 
   private static Robot   instance;
   private        Command m_autonomousCommand;
+  double lastTime = -1;
 
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
-  PhotonCamera camera = new PhotonCamera("photonvision");
+  public static PhotonCamera camObj = new PhotonCamera("objcam");
+  public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
+  public static PhotonCamera camAprTgHigh = new PhotonCamera("aprtghighcam");
   DigitalInput aSensor = new DigitalInput(0);
 
   public Robot()
@@ -67,7 +64,7 @@ public class Robot extends TimedRobot
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
     //LimelightHelpers.setLEDMode_ForceOff("");
-    camera.setLED(VisionLEDMode.kOff);
+    //camera.setLED(VisionLEDMode.kOff);
     DriverStation.silenceJoystickConnectionWarning(true); // Disable joystick connection warning
     Optional<Alliance> allianceColor = DriverStation.getAlliance();
     if (allianceColor.isPresent()) {
@@ -86,6 +83,14 @@ public class Robot extends TimedRobot
           AprilTagConstants.stageIDC  = 16;
         }
       }
+
+    camObj.setDriverMode(false);
+    camAprTgHigh.setDriverMode(false);
+    camAprTgLow.setDriverMode(false);
+    
+    camObj.setPipelineIndex(0);
+    camAprTgHigh.setPipelineIndex(0);
+    camAprTgLow.setPipelineIndex(0);
     //boolean aSensorState = aSensor.get();
     //System.out.println(aSensorState);
   }
@@ -167,9 +172,6 @@ public class Robot extends TimedRobot
     //m_robotContainer.setMotorBrake(true);
     //ArmRotateSubsystem.ArmRotateSetpoint = 90;
 
-    camera.setDriverMode(false);
-    camera.setPipelineIndex(0);
-
 
   }
 
@@ -179,7 +181,50 @@ public class Robot extends TimedRobot
   @Override
   public void teleopPeriodic()
   {
+    
+    if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == true){
+      System.out.println("HighSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 1;
+    }
+    if (RobotContainer.driverXbox.getRawButton(5) == true && RobotContainer.driverXbox.getRawButton(6) == false){
+      System.out.println("MedSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    }
+    if (RobotContainer.driverXbox.getRawButton(5) == false && RobotContainer.driverXbox.getRawButton(6) == true){
+      System.out.println("MedSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+    }
 
+    if (RobotContainer.driverXbox.getRawButton(5) == false && (RobotContainer.driverXbox.getRawButton(6) == false)){
+      //System.out.println("LowSpd");
+      Constants.Drivebase.Max_Speed_Multiplier = 0.5;
+    }
+    
+    var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
+    boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
+    if (hasTargets == true){
+      System.out.println("Note Found - Press and hold B to retrieve the note!");
+      
+      if (lastTime != -1 && Timer.getFPGATimestamp() - lastTime <= 0.5) {
+        RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, .25);
+        //System.err.println("Rumble On");
+      }
+      else if (Timer.getFPGATimestamp() - lastTime <= 1.0) {
+        RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
+        //System.err.println("Rumble Off");
+      }      
+      else {
+        lastTime = Timer.getFPGATimestamp();
+      }
+
+      // while (RobotContainer.driverXbox.getRawButton(2) == true){
+      //   System.out.println("Retrieving Note");
+      // }
+      };
+
+    if (RobotContainer.driverXbox.getRawButton(2) != true) {
+    }
+  
   }
 
   @Override

@@ -1,21 +1,11 @@
 package frc.robot.commands.Vision;
 
-import org.photonvision.PhotonCamera;
-import org.photonvision.common.hardware.VisionLEDMode;
 import org.photonvision.targeting.PhotonTrackedTarget;
-//import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
-//import edu.wpi.first.math.kinematics.ChassisSpeeds;
-//import edu.wpi.first.networktables.NetworkTableEntry;
-//import edu.wpi.first.networktables.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
+import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import edu.wpi.first.wpilibj.XboxController;
-
-
 
 public class DriveToObjectCmd extends Command
 {
@@ -23,10 +13,8 @@ public class DriveToObjectCmd extends Command
   private final SwerveSubsystem swerveSubsystem;
   private final PIDController   xController;
   private final PIDController   yController;
-  private double visionObject;
-  PhotonCamera camera = new PhotonCamera("photonvision");
 
-  public DriveToObjectCmd(SwerveSubsystem swerveSubsystem, double visionObject)
+  public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
   {
     this.swerveSubsystem = swerveSubsystem;
     yController = new PIDController(0.0625, 0.00375, 0.0001);
@@ -38,7 +26,6 @@ public class DriveToObjectCmd extends Command
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
     addRequirements(this.swerveSubsystem);
-    this.visionObject = visionObject;
   }
 
   /**
@@ -47,9 +34,6 @@ public class DriveToObjectCmd extends Command
   @Override
   public void initialize()
   {
-    camera.setLED(VisionLEDMode.kOn);
-    camera.setPipelineIndex((int)visionObject);
-    camera.setDriverMode(false);
 
   }
 
@@ -60,37 +44,26 @@ public class DriveToObjectCmd extends Command
   @Override
   public void execute()
   {
-    var result = camera.getLatestResult();  // Get the latest result from PhotonVision
+    var result = Robot.camObj.getLatestResult();  // Get the latest result from PhotonVision
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     PhotonTrackedTarget target = result.getBestTarget();
-    //int targetID = result.
     
     while (hasTargets == true) {
-      RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kLeftRumble, 0.25);
-      Double TX = target.getYaw();
-      SmartDashboard.putString("PhotoVision Target", "True");
-      SmartDashboard.putNumber("PhotonVision Yaw", TX);
-      Double translationValY = yController.calculate(TX, 0);
-      SmartDashboard.putNumber("TranslationY", translationValY);
+      Double TY = target.getYaw();
+      Double TX = target.getPitch();
+      Double translationValX = xController.calculate(TX, 0);
+      Double translationValY = yController.calculate(TY, 0);
 
-      if (visionObject == 0) {
-          RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kLeftRumble, 0.25);
-          swerveSubsystem.drive(new Translation2d(0.0, translationValY * RobotContainer.driverXbox.getLeftTriggerAxis()),
-                                            0,
-                                            false);
-        }
+      // SmartDashboard.putString("PhotoVision Target", "True");
+      // SmartDashboard.putNumber("PhotonVision Yaw", TY);
+      // SmartDashboard.putNumber("PhotonVision Pitch", TX);
+      // SmartDashboard.putNumber("TranslationX", translationValX);
+      // SmartDashboard.putNumber("TranslationY", translationValY);
 
-      if (visionObject == 1) {
-          RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kRightRumble, 0.25);
-          swerveSubsystem.drive(new Translation2d(0.0, translationValY * RobotContainer.driverXbox.getRightTriggerAxis()),
-                                            0,
-                                            false);
-        }
+      swerveSubsystem.drive(new Translation2d(translationValX, 0.0),
+                                              translationValY,
+                                              false);
     }
-    
-      // double translationVal = MathUtil.clamp(controller.calculate(swerveSubsystem.getPitch().getDegrees(), 0.0), -0.5,
-    //                                        0.5);
-    // swerveSubsystem.drive(new Translation2d(translationVal, 0.0), 0.0, true, false);
   }
 
   /**
@@ -122,7 +95,6 @@ public class DriveToObjectCmd extends Command
   @Override
   public void end(boolean interrupted)
   {
-    //swerveSubsystem.lock();
-    RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
+    //RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
   }
 }
