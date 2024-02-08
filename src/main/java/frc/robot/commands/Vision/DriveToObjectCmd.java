@@ -1,6 +1,8 @@
 package frc.robot.commands.Vision;
 
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,16 +15,21 @@ public class DriveToObjectCmd extends Command
   private final SwerveSubsystem swerveSubsystem;
   private final PIDController   xController;
   private final PIDController   yController;
+  // private final PIDController   zController;
 
   public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
   {
     this.swerveSubsystem = swerveSubsystem;
-    yController = new PIDController(0.0625, 0.00375, 0.0001);
-    yController.setTolerance(1);
-    yController.setSetpoint(0.0);
     xController = new PIDController(.25, 0.01, 0.0001);
+    yController = new PIDController(0.0625, 0.00375, 0.0001);
+    // zController = new PIDController(0.0575,0.0, 0.000);
     xController.setTolerance(1);
-    xController.setSetpoint(1.0);
+    yController.setTolerance(1);
+    // zController.setTolerance(.5);
+    // xController.setSetpoint(1.0);
+    // yController.setSetpoint(0.0);
+    // zController.setSetpoint(0.0);
+
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
     addRequirements(this.swerveSubsystem);
@@ -49,10 +56,13 @@ public class DriveToObjectCmd extends Command
     PhotonTrackedTarget target = result.getBestTarget();
     
     while (hasTargets == true) {
-      Double TY = target.getYaw();
-      Double TX = target.getPitch();
-      Double translationValX = xController.calculate(TX, 0);
-      Double translationValY = yController.calculate(TY, 0);
+      double TY = target.getYaw();
+      double TX = target.getPitch();
+
+      double translationValx = MathUtil.clamp(xController.calculate(TX, 0.0), -1.0 , 1.0); //* throttle, 2.5 * throttle);
+      double translationValy = MathUtil.clamp(yController.calculate(TY, 0.0), -1.0 , 1.0); //* throttle, 2.5 * throttle);
+      
+      //double translationValz = MathUtil.clamp(zController.calculate(tz, 0.0), -2.0 , 2.0); //* throttle, 2.5 * throttle);
 
       // SmartDashboard.putString("PhotoVision Target", "True");
       // SmartDashboard.putNumber("PhotonVision Yaw", TY);
@@ -60,8 +70,8 @@ public class DriveToObjectCmd extends Command
       // SmartDashboard.putNumber("TranslationX", translationValX);
       // SmartDashboard.putNumber("TranslationY", translationValY);
 
-      swerveSubsystem.drive(new Translation2d(translationValX, 0.0),
-                                              translationValY,
+      swerveSubsystem.drive(new Translation2d(translationValx, 0.0),
+                                              translationValy,
                                               false);
     }
   }
