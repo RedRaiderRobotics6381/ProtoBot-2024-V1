@@ -34,9 +34,9 @@ public class Robot extends TimedRobot
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
-  public static PhotonCamera camObj = new PhotonCamera("objcam");
-  public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
-  public static PhotonCamera camAprTgHigh = new PhotonCamera("aprtghighcam");
+//  public static PhotonCamera camObj = new PhotonCamera("camObj");
+  //public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
+//  public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
   DigitalInput aSensor = new DigitalInput(0);
 
   public Robot()
@@ -83,13 +83,13 @@ public class Robot extends TimedRobot
         }
       }
 
-    camObj.setDriverMode(false);
-    camAprTgHigh.setDriverMode(false);
-    camAprTgLow.setDriverMode(false);
+    // camObj.setDriverMode(false);
+    // camAprTgHigh.setDriverMode(false);
+    // //camAprTgLow.setDriverMode(false);
     
-    camObj.setPipelineIndex(0);
-    camAprTgHigh.setPipelineIndex(0);
-    camAprTgLow.setPipelineIndex(0);
+    // camObj.setPipelineIndex(0);
+    // camAprTgHigh.setPipelineIndex(0);
+    //camAprTgLow.setPipelineIndex(0);
     //boolean aSensorState = aSensor.get();
     //System.out.println(aSensorState);
   }
@@ -181,12 +181,12 @@ public class Robot extends TimedRobot
   public void teleopPeriodic()
   {
     m_robotContainer.spencerButtons();
-    var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
-    boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
-    if (hasTargets == true){
-      System.out.println("Note Found - Press and hold B to retrieve the note!");
-      m_robotContainer.pulseRumble();
-    }
+    // var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
+    // boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
+    // if (hasTargets == true){
+    //   System.out.println("Note Found - Press and hold B to retrieve the note!");
+    //   //m_robotContainer.pulseRumble();
+    // }
   }
 
   @Override

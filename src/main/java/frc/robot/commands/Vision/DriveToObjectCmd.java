@@ -1,5 +1,6 @@
 package frc.robot.commands.Vision;
 
+import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,17 +18,19 @@ public class DriveToObjectCmd extends Command
   private final SwerveSubsystem swerveSubsystem;
   private final PIDController   xController;
   private final PIDController   yController;
-  // private final PIDController   zController;
+  private final PIDController   zController;
+  public static PhotonCamera camObj = new PhotonCamera("camObj");
+
 
   public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
   {
     this.swerveSubsystem = swerveSubsystem;
     xController = new PIDController(.25, 0.01, 0.0001);
     yController = new PIDController(0.0625, 0.00375, 0.0001);
-    // zController = new PIDController(0.0575,0.0, 0.000);
+    zController = new PIDController(0.0575,0.0, 0.000);
     xController.setTolerance(1);
     yController.setTolerance(1);
-    // zController.setTolerance(.5);
+    zController.setTolerance(.5);
     // xController.setSetpoint(1.0);
     // yController.setSetpoint(0.0);
     // zController.setSetpoint(0.0);
@@ -43,6 +46,12 @@ public class DriveToObjectCmd extends Command
   @Override
   public void initialize()
   {
+    camObj.setDriverMode(false);
+    //camAprTgHigh.setDriverMode(false);
+    //camAprTgLow.setDriverMode(false);
+    
+    camObj.setPipelineIndex(0);
+    //camAprTgHigh.setPipelineIndex(0);
 
   }
 
@@ -53,28 +62,33 @@ public class DriveToObjectCmd extends Command
   @Override
   public void execute()
   {
-    var result = Robot.camObj.getLatestResult();  // Get the latest result from PhotonVision
+    var result = camObj.getLatestResult();  // Get the latest result from PhotonVision
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     PhotonTrackedTarget target = result.getBestTarget();
     
-    while (hasTargets == true) {
-      double TY = target.getYaw();
+    if (hasTargets == true && RobotContainer.driverXbox.getRawButton(2) == true) {
+      //double TY = target.getYaw();
+      double TZ = target.getYaw();
       double TX = target.getPitch();
 
-      double translationValx = MathUtil.clamp(xController.calculate(TX, 0.0), -1.0 , 1.0); //* throttle, 2.5 * throttle);
-      double translationValy = MathUtil.clamp(yController.calculate(TY, 0.0), -1.0 , 1.0); //* throttle, 2.5 * throttle);
+      double translationValx = MathUtil.clamp(xController.calculate(TX, -16.5), -.5 , .5); //* throttle, 2.5 * throttle);
+      //double translationValy = MathUtil.clamp(yController.calculate(TY, 0.0), -.5 , .5); //* throttle, 2.5 * throttle);
       
-      //double translationValz = MathUtil.clamp(zController.calculate(tz, 0.0), -2.0 , 2.0); //* throttle, 2.5 * throttle);
+      double translationValz = MathUtil.clamp(zController.calculate(TZ, 0.0), -2.0 , 2.0); //* throttle, 2.5 * throttle);
 
       // SmartDashboard.putString("PhotoVision Target", "True");
       // SmartDashboard.putNumber("PhotonVision Yaw", TY);
       // SmartDashboard.putNumber("PhotonVision Pitch", TX);
       // SmartDashboard.putNumber("TranslationX", translationValX);
       // SmartDashboard.putNumber("TranslationY", translationValY);
+        swerveSubsystem.drive(new Translation2d(translationValx, 0.0),
+        translationValz,
+        false);
+  
+    
 
-      swerveSubsystem.drive(new Translation2d(translationValx, 0.0),
-                                              translationValy,
-                                              false);
+    }else{
+      swerveSubsystem.lock();
     }
   }
 
@@ -94,7 +108,7 @@ public class DriveToObjectCmd extends Command
   @Override
   public boolean isFinished()
   {
-    return xController.atSetpoint() && yController.atSetpoint();
+    return xController.atSetpoint();// && yController.atSetpoint();
   }
 
   /**
@@ -108,5 +122,6 @@ public class DriveToObjectCmd extends Command
   public void end(boolean interrupted)
   {
     RobotContainer.driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
+    swerveSubsystem.lock();
   }
 }

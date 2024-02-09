@@ -4,6 +4,13 @@
 
 package frc.robot;
 
+import java.io.File;
+
+import org.photonvision.PhotonCamera;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -17,11 +24,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
 import frc.robot.commands.Vision.DriveToObjectCmd;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import java.io.File;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -36,7 +41,7 @@ public class RobotContainer
                                                                          "swerve/neo"));
 
   //private final PhotonCamera photonCamera = new PhotonCamera("NoteCam");
-
+  public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
   public static XboxController driverXbox = new XboxController(0);
   public static XboxController engineerXbox = new XboxController(1);
   private final SendableChooser<Command> autoChooser;
@@ -124,10 +129,10 @@ public class RobotContainer
     //                                                                                    0.0,
     //                                                                                    0.0));
 
-    // new JoystickButton(driverXbox, 8).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
-    //                                                                                    drivebase,
-    //                                                                                    0,
-    //                                                                                    1));
+    new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosCmd(camAprTgHigh,
+                                                                                       drivebase,
+                                                                                       0,
+                                                                                       1));
     
                                                                                      
     
