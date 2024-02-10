@@ -26,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.OperatorConstants;
 //import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
-import frc.robot.commands.Vision.DriveToAprilTagPosLowCmd;
+import frc.robot.commands.Vision.DriveToAmpCmd;
+import frc.robot.commands.Vision.DriveToSpeakerCmd;
 import frc.robot.commands.Vision.DriveToObjectCmd;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -123,7 +124,8 @@ public class RobotContainer
 
     new JoystickButton(driverXbox, 4).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 2).whileTrue(new DriveToObjectCmd(drivebase)); //changed to 1 from zero. 
-
+    new JoystickButton(driverXbox, 3).whileTrue(new DriveToSpeakerCmd(drivebase));
+    new JoystickButton(driverXbox, 1).whileTrue(new DriveToAmpCmd(drivebase));
     // new JoystickButton(driverXbox, 5).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
     //                                                                                    drivebase,
     //                                                                                    poseProvider,
@@ -133,9 +135,10 @@ public class RobotContainer
     //                                                                                    0.0,
     //                                                                                    0.0));
 
-    new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosLowCmd(camAprTgLow,
-                                                                                       drivebase,
-                                                                                       AprilTagConstants.speakerID));
+    // new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosLowCmd(camAprTgLow,
+    //                                                                                    drivebase,
+    //                                                                                    AprilTagConstants.speakerID));
+
     
                                                                                      
     

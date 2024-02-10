@@ -1,7 +1,7 @@
 package frc.robot.commands.Vision;
 import java.util.function.Supplier;
 
-import org.photonvision.PhotonCamera;
+//import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 // import edu.wpi.first.math.MathUtil;
@@ -17,13 +17,15 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
+import frc.robot.Robot;
 // import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 // import frc.robot.RobotContainer;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 // import edu.wpi.first.wpilibj.XboxController;
 
 
-public class DriveToAprilTagPosLowCmd extends Command
+public class DriveToAmpCmd extends Command
 {
   //private int visionObject;
   private int aprilTagID;
@@ -36,11 +38,11 @@ public class DriveToAprilTagPosLowCmd extends Command
   private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(1.5, 1.0);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(8, 8);
   private static final Transform3d TAG_TO_GOAL = new Transform3d(
-                                                                 new Translation3d(Units.inchesToMeters(66), 0, 0),
+                                                                 new Translation3d(Units.inchesToMeters(24), 0, 0),
                                                                  new Rotation3d(0.0,0.0,Math.PI));
   
   //public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
-  private final PhotonCamera camAprTgLow;
+  //private final PhotonCamera camAprTgHigh;
   private final Supplier<Pose2d> poseProvider;
   private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
   private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
@@ -70,14 +72,12 @@ public class DriveToAprilTagPosLowCmd extends Command
   //                              double yOffset,
   //                              double omegaOffset)
   // {
-    public DriveToAprilTagPosLowCmd(PhotonCamera camAprTgLow, SwerveSubsystem swerveSubsystem, int aprilTagID)
+    public DriveToAmpCmd(SwerveSubsystem swerveSubsystem)
   {  
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
     this.swerveSubsystem = swerveSubsystem;
     this.poseProvider = swerveSubsystem::getPose;
-    this.aprilTagID = aprilTagID;
-    this.camAprTgLow = camAprTgLow;
 
     // this.xOffset = xOffset;
     // this.yOffset = yOffset;
@@ -107,7 +107,7 @@ public class DriveToAprilTagPosLowCmd extends Command
   public void initialize()
   {
     //camAprTgHigh.setLED(VisionLEDMode.kDefault);
-    camAprTgLow.setPipelineIndex(0);
+    //camAprTgHigh.setPipelineIndex(0);
     lastTarget = null;
     var robotPose = poseProvider.get();
     omegaController.reset(robotPose.getRotation().getRadians());
@@ -129,12 +129,13 @@ public class DriveToAprilTagPosLowCmd extends Command
         0.0,
         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
 
-    var photonRes = camAprTgLow.getLatestResult();
+    var photonRes = Robot.camAprTgHigh.getLatestResult();
+    System.out.println(photonRes.hasTargets());
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
-      .filter(t -> t.getFiducialId() == aprilTagID)
-      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .01 && t.getPoseAmbiguity() != -1)
+      .filter(t -> t.getFiducialId() == 6)
+      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .00 && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
         var target = targetOpt.get();

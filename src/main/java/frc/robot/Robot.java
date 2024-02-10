@@ -37,7 +37,7 @@ public class Robot extends TimedRobot
   private Timer disabledTimer;
   
   public static PhotonCamera camObj = new PhotonCamera("camObj");
-  public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
+  public static PhotonCamera camAprTgLow = new PhotonCamera("camAprTgLow");
   public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
   
   DigitalInput aSensor = new DigitalInput(0);
@@ -242,7 +242,7 @@ public class Robot extends TimedRobot
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     if (hasTargets == true){
       System.out.println("Note Found - Press and hold B to retrieve the note!");
-     RobotContainer.pulseRumble();
+     //RobotContainer.pulseRumble();
     } else{
       RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
     }
