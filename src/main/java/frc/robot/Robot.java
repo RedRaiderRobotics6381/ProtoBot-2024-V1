@@ -159,6 +159,7 @@ public class Robot extends TimedRobot
     }
     m_robotContainer.setDriveMode();
     aprilTagAlliance();
+    RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
     //m_robotContainer.setMotorBrake(true);
     //ArmRotateSubsystem.ArmRotateSetpoint = 90;
 
@@ -230,7 +231,7 @@ public class Robot extends TimedRobot
           AprilTagConstants.speakerID = 7;
           AprilTagConstants.stageIDA  = 14;
           AprilTagConstants.stageIDB  = 15;
-          AprilTagConstants.stageIDC  = 16;
+          AprilTagConstants.stageIDC  = 16; //change to 16 when Matt figures out his purpose in tags....
         }
       }
     

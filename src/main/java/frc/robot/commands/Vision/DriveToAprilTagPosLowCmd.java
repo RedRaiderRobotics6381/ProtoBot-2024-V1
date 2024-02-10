@@ -36,7 +36,7 @@ public class DriveToAprilTagPosLowCmd extends Command
   private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(1.5, 1.0);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(8, 8);
   private static final Transform3d TAG_TO_GOAL = new Transform3d(
-                                                                 new Translation3d(Units.inchesToMeters(60), 0, 0),
+                                                                 new Translation3d(Units.inchesToMeters(66), 0, 0),
                                                                  new Rotation3d(0.0,0.0,Math.PI));
   
   //public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
@@ -107,7 +107,7 @@ public class DriveToAprilTagPosLowCmd extends Command
   public void initialize()
   {
     //camAprTgHigh.setLED(VisionLEDMode.kDefault);
-    //camAprTgHigh.setPipelineIndex(visionObject);
+    camAprTgLow.setPipelineIndex(0);
     lastTarget = null;
     var robotPose = poseProvider.get();
     omegaController.reset(robotPose.getRotation().getRadians());
@@ -134,7 +134,7 @@ public class DriveToAprilTagPosLowCmd extends Command
       //Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
       .filter(t -> t.getFiducialId() == aprilTagID)
-      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
+      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .01 && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
         var target = targetOpt.get();
@@ -143,7 +143,7 @@ public class DriveToAprilTagPosLowCmd extends Command
 
         // Transform the robot's pose to find the camera's pose
         var cameraPose = robotPose
-            .transformBy(new Transform3d(new Translation3d(-.170, -.135, -0.175), new Rotation3d()));
+            .transformBy(new Transform3d(new Translation3d(-.512, 0.0, -0.558), new Rotation3d()));
 
         // Trasnform the camera's pose to the target's pose
         var camToTarget = target.getBestCameraToTarget();

@@ -81,8 +81,7 @@ public class RobotContainer
                                                              Constants.Drivebase.Max_Speed_Multiplier,
         () -> MathUtil.applyDeadband(-driverXbox.getLeftX(), OperatorConstants.LEFT_X_DEADBAND) *
                                                              Constants.Drivebase.Max_Speed_Multiplier,
-        () -> MathUtil.applyDeadband(-driverXbox.getRawAxis(4), OperatorConstants.RIGHT_X_DEADBAND) *
-                                                                     Constants.Drivebase.Max_Speed_Multiplier);
+        () -> MathUtil.applyDeadband(-driverXbox.getRawAxis(4), OperatorConstants.RIGHT_X_DEADBAND) );
 
     Command driveFieldOrientedDirectAngleSim = drivebase.simDriveCommand(
         () -> MathUtil.applyDeadband(-driverXbox.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND) *
@@ -177,25 +176,25 @@ public class RobotContainer
     }
     if (driverXbox.getRawButton(5) == true && driverXbox.getRawButton(6) == false){
       System.out.println("MedSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+      Constants.Drivebase.Max_Speed_Multiplier = 0.85;
     }
     if (driverXbox.getRawButton(5) == false && driverXbox.getRawButton(6) == true){
       System.out.println("MedSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 0.75;
+      Constants.Drivebase.Max_Speed_Multiplier = 0.85;
     }
 
     if (driverXbox.getRawButton(5) == false && (driverXbox.getRawButton(6) == false)){
       //System.out.println("LowSpd");
-      Constants.Drivebase.Max_Speed_Multiplier = 0.5;
+      Constants.Drivebase.Max_Speed_Multiplier = 0.69;
     }
   }
 
   public static void pulseRumble(){
-      if (lastTime != -1 && Timer.getFPGATimestamp() - lastTime <= 0.5) {
+      if (lastTime != -1 && Timer.getFPGATimestamp() - lastTime <= 0.25) {
         driverXbox.setRumble(XboxController.RumbleType.kBothRumble, .25);
         //System.err.println("Rumble On");
       }
-      else if (Timer.getFPGATimestamp() - lastTime <= 1.0) {
+      else if (Timer.getFPGATimestamp() - lastTime <= 0.5) {
         driverXbox.setRumble(XboxController.RumbleType.kBothRumble, 0);
         //System.err.println("Rumble Off");
       }      
