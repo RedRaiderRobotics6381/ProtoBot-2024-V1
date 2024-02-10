@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -34,9 +35,11 @@ public class Robot extends TimedRobot
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
-//  public static PhotonCamera camObj = new PhotonCamera("camObj");
-  //public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
-//  public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
+  
+  public static PhotonCamera camObj = new PhotonCamera("camObj");
+  public static PhotonCamera camAprTgLow = new PhotonCamera("aprtglowcam");
+  public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
+  
   DigitalInput aSensor = new DigitalInput(0);
 
   public Robot()
@@ -59,37 +62,21 @@ public class Robot extends TimedRobot
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
     //LimelightHelpers.setLEDMode_ForceOff("");
     //camera.setLED(VisionLEDMode.kOff);
     DriverStation.silenceJoystickConnectionWarning(true); // Disable joystick connection warning
-    Optional<Alliance> allianceColor = DriverStation.getAlliance();
-    if (allianceColor.isPresent()) {
-        if (allianceColor.get() == Alliance.Red) {
-          AprilTagConstants.ampID     = 5;
-          AprilTagConstants.speakerID = 4;
-          AprilTagConstants.stageIDA  = 13;
-          AprilTagConstants.stageIDB  = 12;
-          AprilTagConstants.stageIDC  = 11;
-        }
-        if (allianceColor.get() == Alliance.Blue) {
-          AprilTagConstants.ampID     = 6;
-          AprilTagConstants.speakerID = 7;
-          AprilTagConstants.stageIDA  = 14;
-          AprilTagConstants.stageIDB  = 15;
-          AprilTagConstants.stageIDC  = 16;
-        }
-      }
 
-    // camObj.setDriverMode(false);
-    // camAprTgHigh.setDriverMode(false);
-    // //camAprTgLow.setDriverMode(false);
+    camObj.setDriverMode(false);
+    camAprTgHigh.setDriverMode(false);
+    camAprTgLow.setDriverMode(false);
     
-    // camObj.setPipelineIndex(0);
-    // camAprTgHigh.setPipelineIndex(0);
-    //camAprTgLow.setPipelineIndex(0);
+    camObj.setPipelineIndex(0);
+    camAprTgHigh.setPipelineIndex(0);
+    camAprTgLow.setPipelineIndex(0);
     //boolean aSensorState = aSensor.get();
     //System.out.println(aSensorState);
   }
@@ -120,6 +107,7 @@ public class Robot extends TimedRobot
     m_robotContainer.setMotorBrake(true);
     disabledTimer.reset();
     disabledTimer.start();
+    RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
   }
 
   @Override
@@ -140,6 +128,8 @@ public class Robot extends TimedRobot
   {
     m_robotContainer.setMotorBrake(true);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+    aprilTagAlliance();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null)
@@ -168,6 +158,7 @@ public class Robot extends TimedRobot
       m_autonomousCommand.cancel();
     }
     m_robotContainer.setDriveMode();
+    aprilTagAlliance();
     //m_robotContainer.setMotorBrake(true);
     //ArmRotateSubsystem.ArmRotateSetpoint = 90;
 
@@ -181,12 +172,8 @@ public class Robot extends TimedRobot
   public void teleopPeriodic()
   {
     m_robotContainer.spencerButtons();
-    // var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
-    // boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
-    // if (hasTargets == true){
-    //   System.out.println("Note Found - Press and hold B to retrieve the note!");
-    //   //m_robotContainer.pulseRumble();
-    // }
+    watchForNote();
+    
   }
 
   @Override
@@ -225,5 +212,39 @@ public class Robot extends TimedRobot
   @Override
   public void simulationPeriodic()
   {
+  }
+  
+  public static void aprilTagAlliance(){
+    
+    Optional<Alliance> allianceColor = DriverStation.getAlliance();
+    if (allianceColor.isPresent()) {
+        if (allianceColor.get() == Alliance.Red) {
+          AprilTagConstants.ampID     = 5;
+          AprilTagConstants.speakerID = 4;
+          AprilTagConstants.stageIDA  = 13;
+          AprilTagConstants.stageIDB  = 12;
+          AprilTagConstants.stageIDC  = 11;
+        }
+        if (allianceColor.get() == Alliance.Blue) {
+          AprilTagConstants.ampID     = 6;
+          AprilTagConstants.speakerID = 7;
+          AprilTagConstants.stageIDA  = 14;
+          AprilTagConstants.stageIDB  = 15;
+          AprilTagConstants.stageIDC  = 16;
+        }
+      }
+    
+  }
+
+  public static boolean watchForNote(){
+    var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
+    boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
+    if (hasTargets == true){
+      System.out.println("Note Found - Press and hold B to retrieve the note!");
+     RobotContainer.pulseRumble();
+    } else{
+      RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
+    }
+    return hasTargets;
   }
 }

@@ -23,8 +23,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
+//import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
+import frc.robot.commands.Vision.DriveToAprilTagPosLowCmd;
 import frc.robot.commands.Vision.DriveToObjectCmd;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -41,11 +43,14 @@ public class RobotContainer
                                                                          "swerve/neo"));
 
   //private final PhotonCamera photonCamera = new PhotonCamera("NoteCam");
-  public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
+  //public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
   public static XboxController driverXbox = new XboxController(0);
   public static XboxController engineerXbox = new XboxController(1);
   private final SendableChooser<Command> autoChooser;
-  double lastTime = -1;
+  static double lastTime = -1;
+
+  public static PhotonCamera camAprTgHigh = Robot.camAprTgHigh;
+  public static PhotonCamera camAprTgLow = Robot.camAprTgLow;
 
 
   /**
@@ -129,10 +134,9 @@ public class RobotContainer
     //                                                                                    0.0,
     //                                                                                    0.0));
 
-    new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosCmd(camAprTgHigh,
+    new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosLowCmd(camAprTgLow,
                                                                                        drivebase,
-                                                                                       0,
-                                                                                       1));
+                                                                                       AprilTagConstants.speakerID));
     
                                                                                      
     
@@ -186,7 +190,7 @@ public class RobotContainer
     }
   }
 
-  public void pulseRumble(){
+  public static void pulseRumble(){
       if (lastTime != -1 && Timer.getFPGATimestamp() - lastTime <= 0.5) {
         driverXbox.setRumble(XboxController.RumbleType.kBothRumble, .25);
         //System.err.println("Rumble On");

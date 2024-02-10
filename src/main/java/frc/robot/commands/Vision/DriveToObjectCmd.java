@@ -1,6 +1,6 @@
 package frc.robot.commands.Vision;
 
-import org.photonvision.PhotonCamera;
+//import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
@@ -19,7 +19,7 @@ public class DriveToObjectCmd extends Command
   private final PIDController   xController;
   private final PIDController   yController;
   private final PIDController   zController;
-  public static PhotonCamera camObj = new PhotonCamera("camObj");
+  //public static PhotonCamera camObj = new PhotonCamera("camObj");
 
 
   public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
@@ -46,11 +46,11 @@ public class DriveToObjectCmd extends Command
   @Override
   public void initialize()
   {
-    camObj.setDriverMode(false);
+    //camObj.setDriverMode(false);
     //camAprTgHigh.setDriverMode(false);
     //camAprTgLow.setDriverMode(false);
     
-    camObj.setPipelineIndex(0);
+    //camObj.setPipelineIndex(0);
     //camAprTgHigh.setPipelineIndex(0);
 
   }
@@ -62,7 +62,8 @@ public class DriveToObjectCmd extends Command
   @Override
   public void execute()
   {
-    var result = camObj.getLatestResult();  // Get the latest result from PhotonVision
+    //var result = camObj.getLatestResult();  // Get the latest result from PhotonVision
+    var result = Robot.camObj.getLatestResult();  // Get the latest result from PhotonVision
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     PhotonTrackedTarget target = result.getBestTarget();
     
@@ -89,6 +90,7 @@ public class DriveToObjectCmd extends Command
 
     }else{
       swerveSubsystem.lock();
+
     }
   }
 

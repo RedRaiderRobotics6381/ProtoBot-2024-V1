@@ -23,7 +23,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 // import edu.wpi.first.wpilibj.XboxController;
 
 
-public class DriveToAprilTagPosCmd extends Command
+public class DriveToAprilTagPosHighCmd extends Command
 {
   //private int visionObject;
   private int aprilTagID;
@@ -41,17 +41,12 @@ public class DriveToAprilTagPosCmd extends Command
   
   //public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
   private final PhotonCamera camAprTgHigh;
-  private final PhotonCamera camAprTgLow;
   private final Supplier<Pose2d> poseProvider;
   private final ProfiledPIDController xController = new ProfiledPIDController(3, 0, 0, X_CONSTRAINTS);
   private final ProfiledPIDController yController = new ProfiledPIDController(3, 0, 0, Y_CONSTRAINTS);
   private final ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
 
-  private PhotonTrackedTarget lastTargetHigh;
-  private PhotonTrackedTarget lastTargetLow;
-
-
-
+  private PhotonTrackedTarget lastTarget;
   
   //private double previousPipelineTimestamp = 0;
   
@@ -63,16 +58,7 @@ public class DriveToAprilTagPosCmd extends Command
 
   //final double GOAL_RANGE_METERS = Units.feetToMeters(5); //Distance from the goal to stop at
   
-  // public DriveToAprilTagPosCmd(PhotonCamera photonCamera,
-  //                              SwerveSubsystem swerveSubsystem,
-  //                              Supplier<Pose2d> poseProvider,
-  //                              int visionObject,
-  //                              int aprilTagID,
-  //                              double xOffset,
-  //                              double yOffset,
-  //                              double omegaOffset)
-  // {
-    public DriveToAprilTagPosCmd(PhotonCamera camAprTgHigh, PhotonCamera camAprTgLow, SwerveSubsystem swerveSubsystem, int aprilTagID)
+  public DriveToAprilTagPosHighCmd(PhotonCamera camAprTgHigh, SwerveSubsystem swerveSubsystem, int aprilTagID)
   {  
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
@@ -80,7 +66,6 @@ public class DriveToAprilTagPosCmd extends Command
     this.poseProvider = swerveSubsystem::getPose;
     this.aprilTagID = aprilTagID;
     this.camAprTgHigh = camAprTgHigh;
-    this.camAprTgLow = camAprTgLow;
 
     // this.xOffset = xOffset;
     // this.yOffset = yOffset;
@@ -111,8 +96,7 @@ public class DriveToAprilTagPosCmd extends Command
   {
     //camAprTgHigh.setLED(VisionLEDMode.kDefault);
     //camAprTgHigh.setPipelineIndex(visionObject);
-    lastTargetHigh = null;
-    lastTargetLow = null;
+    lastTarget = null;
     var robotPose = poseProvider.get();
     omegaController.reset(robotPose.getRotation().getRadians());
     xController.reset(robotPose.getX());
@@ -133,37 +117,37 @@ public class DriveToAprilTagPosCmd extends Command
         0.0,
         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
 
-    var photonResHigh = camAprTgHigh.getLatestResult();
-    if (photonResHigh.hasTargets()) {
+    var photonRes = camAprTgHigh.getLatestResult();
+    if (photonRes.hasTargets()) {
       //Find the tag we want to chase
-      var targetOptHigh = photonResHigh.getTargets().stream()
+      var targetOpt = photonRes.getTargets().stream()
       .filter(t -> t.getFiducialId() == aprilTagID)
-      .filter(t -> !t.equals(lastTargetHigh) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
+      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .2 && t.getPoseAmbiguity() != -1)
       .findFirst();
-      if (targetOptHigh.isPresent()) {
-        var targetHigh = targetOptHigh.get();
+      if (targetOpt.isPresent()) {
+        var target = targetOpt.get();
         // This is new target data, so recalculate the goal
-        lastTargetHigh = targetHigh;
+        lastTarget = target;
 
         // Transform the robot's pose to find the camera's pose
         var cameraPose = robotPose
             .transformBy(new Transform3d(new Translation3d(-.170, -.135, -0.175), new Rotation3d()));
 
         // Trasnform the camera's pose to the target's pose
-        var camToTargetHigh = targetHigh.getBestCameraToTarget();
-        var targetPoseHigh = cameraPose.transformBy(camToTargetHigh);
+        var camToTarget = target.getBestCameraToTarget();
+        var targetPose = cameraPose.transformBy(camToTarget);
 
         // Transform the tag's pose to set our goal
-        var goalPoseHigh = targetPoseHigh.transformBy(TAG_TO_GOAL).toPose2d();
+        var goalPose = targetPose.transformBy(TAG_TO_GOAL).toPose2d();
 
         // Drive
-        xController.setGoal(goalPoseHigh.getX());
-        yController.setGoal(goalPoseHigh.getY());
-        omegaController.setGoal(goalPoseHigh.getRotation().getRadians());
+        xController.setGoal(goalPose.getX());
+        yController.setGoal(goalPose.getY());
+        omegaController.setGoal(goalPose.getRotation().getRadians());
       }
     }
 
-    if (lastTargetHigh == null) {
+    if (lastTarget == null) {
       // No target has been visible
       swerveSubsystem.lock();
     } else {
