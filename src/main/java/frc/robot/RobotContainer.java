@@ -26,8 +26,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Constants.OperatorConstants;
 //import frc.robot.commands.Vision.DriveToAprilTagPosCmd;
-import frc.robot.commands.Vision.DriveToAmpCmd;
+//import frc.robot.commands.Vision.DriveToAmpCmd;
 import frc.robot.commands.Vision.DriveToSpeakerCmd;
+import frc.robot.commands.Vision.DriveToStageCmd;
+import frc.robot.commands.Vision.DriveToAmpCmd;
 import frc.robot.commands.Vision.DriveToObjectCmd;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -122,10 +124,13 @@ public class RobotContainer
     //Axis 5 is right joystick y forward and back
 
 
-    new JoystickButton(driverXbox, 4).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    new JoystickButton(driverXbox, 8).onTrue((new InstantCommand(drivebase::zeroGyro)));
+    
+    //new JoystickButton(driverXbox, 4).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 2).whileTrue(new DriveToObjectCmd(drivebase)); //changed to 1 from zero. 
     new JoystickButton(driverXbox, 3).whileTrue(new DriveToSpeakerCmd(drivebase));
     new JoystickButton(driverXbox, 1).whileTrue(new DriveToAmpCmd(drivebase));
+    new JoystickButton(driverXbox, 4).whileTrue(new DriveToStageCmd(drivebase));
     // new JoystickButton(driverXbox, 5).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
     //                                                                                    drivebase,
     //                                                                                    poseProvider,

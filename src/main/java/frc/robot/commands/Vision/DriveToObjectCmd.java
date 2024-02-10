@@ -25,9 +25,10 @@ public class DriveToObjectCmd extends Command
   public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
   {
     this.swerveSubsystem = swerveSubsystem;
-    xController = new PIDController(.25, 0.01, 0.0001);
+    xController = new PIDController(0.055, 0.00, 0.0);
+    //xController = new PIDController(0.0625, 0.00375, 0.2);
     yController = new PIDController(0.0625, 0.00375, 0.0001);
-    zController = new PIDController(0.0575,0.0, 0.000);
+    zController = new PIDController(0.025,0.0, 0.000);
     xController.setTolerance(1);
     yController.setTolerance(1);
     zController.setTolerance(.5);
@@ -72,7 +73,7 @@ public class DriveToObjectCmd extends Command
       double TZ = target.getYaw();
       double TX = target.getPitch();
 
-      double translationValx = MathUtil.clamp(xController.calculate(TX, -16.5), -.5 , .5); //* throttle, 2.5 * throttle);
+      double translationValx = MathUtil.clamp(xController.calculate(TX, -18), -1.0 , 1.0); //* throttle, 2.5 * throttle);
       //double translationValy = MathUtil.clamp(yController.calculate(TY, 0.0), -.5 , .5); //* throttle, 2.5 * throttle);
       
       double translationValz = MathUtil.clamp(zController.calculate(TZ, 0.0), -2.0 , 2.0); //* throttle, 2.5 * throttle);
@@ -82,14 +83,20 @@ public class DriveToObjectCmd extends Command
       // SmartDashboard.putNumber("PhotonVision Pitch", TX);
       // SmartDashboard.putNumber("TranslationX", translationValX);
       // SmartDashboard.putNumber("TranslationY", translationValY);
+
+      if (xController.atSetpoint() != true) {
+        
+
+      
         swerveSubsystem.drive(new Translation2d(translationValx, 0.0),
         translationValz,
         false);
+      } 
   
     
 
-    }else{
-      swerveSubsystem.lock();
+    } else{
+      //swerveSubsystem.lock();
 
     }
   }

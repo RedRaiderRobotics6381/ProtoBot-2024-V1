@@ -130,12 +130,12 @@ public class DriveToAmpCmd extends Command
         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
 
     var photonRes = Robot.camAprTgHigh.getLatestResult();
-    System.out.println(photonRes.hasTargets());
+    //System.out.println(photonRes.hasTargets());
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
       .filter(t -> t.getFiducialId() == 6)
-      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() <= .00 && t.getPoseAmbiguity() != -1)
+      .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
         var target = targetOpt.get();

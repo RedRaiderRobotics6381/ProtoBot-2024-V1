@@ -25,7 +25,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 // import edu.wpi.first.wpilibj.XboxController;
 
 
-public class DriveToSpeakerCmd extends Command
+public class DriveToStageCmd extends Command
 {
   //private int visionObject;
   private int aprilTagID;
@@ -38,7 +38,7 @@ public class DriveToSpeakerCmd extends Command
   private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3.0, 1.5);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(8, 8);
   private static final Transform3d TAG_TO_GOAL = new Transform3d(
-                                                                 new Translation3d(1.35, 0, 0),
+                                                                 new Translation3d(0.65, 0, 0),
                                                                  new Rotation3d(0.0,0.0,Math.PI));
   
   //public static PhotonCamera camAprTgLow = new PhotonCamera("camAprTgLow");
@@ -72,7 +72,7 @@ public class DriveToSpeakerCmd extends Command
   //                              double yOffset,
   //                              double omegaOffset)
   // {
-    public DriveToSpeakerCmd(SwerveSubsystem swerveSubsystem)
+    public DriveToStageCmd(SwerveSubsystem swerveSubsystem)
   {  
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
@@ -134,7 +134,7 @@ public class DriveToSpeakerCmd extends Command
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
-      .filter(t -> t.getFiducialId() == 7)
+      .filter(t -> t.getFiducialId() == 15)
       .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
