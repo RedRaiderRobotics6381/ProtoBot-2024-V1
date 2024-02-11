@@ -74,9 +74,9 @@ public class Robot extends TimedRobot
     camAprTgHigh.setDriverMode(false);
     camAprTgLow.setDriverMode(false);
     
-    camObj.setPipelineIndex(0);
+    //camObj.setPipelineIndex(0);
     //camAprTgHigh.setPipelineIndex(0);
-    camAprTgLow.setPipelineIndex(0);
+    //camAprTgLow.setPipelineIndex(0);
     //boolean aSensorState = aSensor.get();
     //System.out.println(aSensorState);
   }

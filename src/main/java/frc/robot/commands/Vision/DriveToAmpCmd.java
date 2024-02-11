@@ -129,7 +129,16 @@ public class DriveToAmpCmd extends Command
         0.0,
         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
 
-    var photonRes = Robot.camAprTgHigh.getLatestResult();
+    var photonResLow = Robot.camAprTgLow.getLatestResult();
+    var photonResHigh = Robot.camAprTgHigh.getLatestResult();
+    var photonRes = photonResLow; // Default to low resolution result
+    if (photonResLow.hasTargets()) {
+      photonRes = Robot.camAprTgLow.getLatestResult();
+    }
+    if (photonResHigh.hasTargets()) {
+      photonRes = Robot.camAprTgHigh.getLatestResult();
+    }
+
     //System.out.println(photonRes.hasTargets());
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase

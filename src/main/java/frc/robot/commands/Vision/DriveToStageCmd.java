@@ -1,11 +1,6 @@
 package frc.robot.commands.Vision;
 import java.util.function.Supplier;
-
-//import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
-
-// import edu.wpi.first.math.MathUtil;
-// import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -14,24 +9,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.Robot;
-// import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
-// import frc.robot.RobotContainer;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-// import edu.wpi.first.wpilibj.XboxController;
-
 
 public class DriveToStageCmd extends Command
 {
-  //private int visionObject;
   private int aprilTagID;
-  // private double xOffset;
-  // private double yOffset;
-  // private double omegaOffset;
 
   private final SwerveSubsystem swerveSubsystem;
   private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3.0, 1.5);
@@ -41,55 +25,19 @@ public class DriveToStageCmd extends Command
                                                                  new Translation3d(0.65, 0, 0),
                                                                  new Rotation3d(0.0,0.0,Math.PI));
   
-  //public static PhotonCamera camAprTgLow = new PhotonCamera("camAprTgLow");
-  //private final PhotonCamera camAprTgLow;
   private final Supplier<Pose2d> poseProvider;
   private final ProfiledPIDController xController = new ProfiledPIDController(6.5, 1.5, 0, X_CONSTRAINTS);
   private final ProfiledPIDController yController = new ProfiledPIDController(2.255, 0, 0, Y_CONSTRAINTS);
   private final ProfiledPIDController omegaController = new ProfiledPIDController(2, 0, 0, OMEGA_CONSTRAINTS);
 
-    private PhotonTrackedTarget lastTarget;
+  private PhotonTrackedTarget lastTarget;
 
-
-
-  
-  //private double previousPipelineTimestamp = 0;
-  
-  //final double TARGET_HEIGHT_METERS = Units.feetToMeters(4.33854166667);
-  //final double TARGET_PITCH_RADIANS = Units.degreesToRadians(0); //angle of the target
-  
-  //final double CAMERA_HEIGHT_METERS = Units.inchesToMeters(12);
-  //final double CAMERA_PITCH_RADIANS = Units.degreesToRadians(10); //angle of the camera
-
-  //final double GOAL_RANGE_METERS = Units.feetToMeters(5); //Distance from the goal to stop at
-  
-  // public DriveToAprilTagPosCmd(PhotonCamera photonCamera,
-  //                              SwerveSubsystem swerveSubsystem,
-  //                              Supplier<Pose2d> poseProvider,
-  //                              int visionObject,
-  //                              int aprilTagID,
-  //                              double xOffset,
-  //                              double yOffset,
-  //                              double omegaOffset)
-  // {
-    public DriveToStageCmd(SwerveSubsystem swerveSubsystem)
-  {  
+  public DriveToStageCmd(SwerveSubsystem swerveSubsystem)
+    {  
     // each subsystem used by the command must be passed into the
     // addRequirements() method (which takes a vararg of Subsystem)
     this.swerveSubsystem = swerveSubsystem;
     this.poseProvider = swerveSubsystem::getPose;
-
-    // this.xOffset = xOffset;
-    // this.yOffset = yOffset;
-    // this.omegaOffset = omegaOffset;    
-
-    // xController = new PIDController(.25, 0.01, 0.0001);
-    // yController = new PIDController(0.0625, 0.00375, 0.0001);
-    // zController = new PIDController(0.0575,0.0, 0.000);
-
-    // xController.setIZone(0.1); //0.1 meters
-    // yController.setIZone(0.1); //0.1 meters
-    // zController.setIZone(0.5); //0.5 degrees
 
     xController.setTolerance(0.1); //0.2 meters
     yController.setTolerance(0.1); //0.2 meters
@@ -106,8 +54,6 @@ public class DriveToStageCmd extends Command
   @Override
   public void initialize()
   {
-    //camAprTgLow.setLED(VisionLEDMode.kDefault);
-    //camAprTgLow.setPipelineIndex(0);
     lastTarget = null;
     var robotPose = poseProvider.get();
     omegaController.reset(robotPose.getRotation().getRadians());
@@ -129,7 +75,16 @@ public class DriveToStageCmd extends Command
         0.0,
         new Rotation3d(0.0, 0.0, robotPose2d.getRotation().getRadians()));
 
-    var photonRes = Robot.camAprTgLow.getLatestResult();
+    var photonResLow = Robot.camAprTgLow.getLatestResult();
+    var photonResHigh = Robot.camAprTgHigh.getLatestResult();
+    var photonRes = photonResLow; // Default to low resolution result
+    if (photonResLow.hasTargets()) {
+      photonRes = Robot.camAprTgLow.getLatestResult();
+    }
+    if (photonResHigh.hasTargets()) {
+      photonRes = Robot.camAprTgHigh.getLatestResult();
+    }
+  
     //System.out.println(photonRes.hasTargets());
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase
