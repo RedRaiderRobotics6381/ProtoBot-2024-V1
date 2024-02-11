@@ -10,13 +10,12 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.AprilTagConstants;
 import frc.robot.Robot;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class DriveToSpeakerCmd extends Command
 {
-  private int aprilTagID;
-
   private final SwerveSubsystem swerveSubsystem;
   private static final TrapezoidProfile.Constraints X_CONSTRAINTS = new TrapezoidProfile.Constraints(3.0, 1.5);
   private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3.0, 1.5);
@@ -77,7 +76,7 @@ public class DriveToSpeakerCmd extends Command
     if (photonRes.hasTargets()) {
       //Find the tag we want to chase
       var targetOpt = photonRes.getTargets().stream()
-      .filter(t -> t.getFiducialId() == 7)
+      .filter(t -> t.getFiducialId() == AprilTagConstants.speakerID) //4 Red & 7 Blue
       .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
