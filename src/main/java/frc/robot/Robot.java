@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.AprilTagConstants;
+import frc.robot.subsystems.Secondary.LEDs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -31,7 +32,6 @@ public class Robot extends TimedRobot
   private static Robot   instance;
   private        Command m_autonomousCommand;
 
-
   private RobotContainer m_robotContainer;
 
   private Timer disabledTimer;
@@ -39,6 +39,7 @@ public class Robot extends TimedRobot
   public static PhotonCamera camObj = new PhotonCamera("camObj");
   public static PhotonCamera camAprTgLow = new PhotonCamera("camAprTgLow");
   public static PhotonCamera camAprTgHigh = new PhotonCamera("camAprTgHigh");
+
   
   DigitalInput aSensor = new DigitalInput(0);
 
@@ -66,13 +67,10 @@ public class Robot extends TimedRobot
     // Create a timer to disable motor brake a few seconds after disable.  This will let the robot stop
     // immediately when disabled, but then also let it be pushed more 
     disabledTimer = new Timer();
-    //LimelightHelpers.setLEDMode_ForceOff("");
-    //camera.setLED(VisionLEDMode.kOff);
-    DriverStation.silenceJoystickConnectionWarning(true); // Disable joystick connection warning
-
     camObj.setDriverMode(false);
     camAprTgHigh.setDriverMode(false);
     camAprTgLow.setDriverMode(false);
+    DriverStation.silenceJoystickConnectionWarning(true); // Disable joystick connection warning
     
     //camObj.setPipelineIndex(0);
     //camAprTgHigh.setPipelineIndex(0);
@@ -242,6 +240,7 @@ public class Robot extends TimedRobot
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     if (hasTargets == true){
       System.out.println("Note Found - Press and hold B to retrieve the note!");
+      LEDs.setLEDwBlink(.65, .125);
      //RobotContainer.pulseRumble();
     } else{
       RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);

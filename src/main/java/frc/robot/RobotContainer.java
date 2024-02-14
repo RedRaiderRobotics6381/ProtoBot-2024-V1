@@ -122,35 +122,16 @@ public class RobotContainer
 
 
     new JoystickButton(driverXbox, 8).onTrue((new InstantCommand(drivebase::zeroGyro)));
-    
-    //new JoystickButton(driverXbox, 4).onTrue((new InstantCommand(drivebase::zeroGyro)));
     new JoystickButton(driverXbox, 2).whileTrue(new DriveToObjectCmd(drivebase)); //changed to 1 from zero. 
     new JoystickButton(driverXbox, 3).whileTrue(new DriveToSpeakerCmd(drivebase));
     new JoystickButton(driverXbox, 1).whileTrue(new DriveToAmpCmd(drivebase));
     new JoystickButton(driverXbox, 4).whileTrue(new DriveToStageCmd(drivebase));
-    // new JoystickButton(driverXbox, 5).whileTrue(new DriveToAprilTagPosCmd(photonCamera,
-    //                                                                                    drivebase,
-    //                                                                                    poseProvider,
-    //                                                                                    0,
-    //                                                                                    11,
-    //                                                                                    60.0,
-    //                                                                                    0.0,
-    //                                                                                    0.0));
 
-    // new JoystickButton(driverXbox, 3).whileTrue(new DriveToAprilTagPosLowCmd(camAprTgLow,
-    //                                                                                    drivebase,
-    //                                                                                    AprilTagConstants.speakerID));
-
-    
-                                                                                     
-    
-    //new JoystickButton(driverXbox, 3).onTrue(new InstantCommand(drivebase::addFakeVisionReading));
     // new JoystickButton(driverXbox,
     //                    2).whileTrue(
     //     Commands.deferredProxy(() -> drivebase.driveToPose(
     //                                new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0)))
     //                           ));
-    //    new JoystickButton(driverXbox, 3).whileTrue(new RepeatCommand(new InstantCommand(drivebase::lock, drivebase)));
   }
 
   /**

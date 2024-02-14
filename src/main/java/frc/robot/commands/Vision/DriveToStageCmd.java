@@ -21,7 +21,7 @@ public class DriveToStageCmd extends Command
   private static final TrapezoidProfile.Constraints Y_CONSTRAINTS = new TrapezoidProfile.Constraints(3.0, 1.5);
   private static final TrapezoidProfile.Constraints OMEGA_CONSTRAINTS = new TrapezoidProfile.Constraints(8, 8);
   private static final Transform3d TAG_TO_GOAL = new Transform3d(
-                                                                 new Translation3d(0.65, 0, 0),
+                                                                 new Translation3d(.65, 0, 0),
                                                                  new Rotation3d(0.0,0.0,Math.PI));
   
   private final Supplier<Pose2d> poseProvider;
@@ -90,7 +90,7 @@ public class DriveToStageCmd extends Command
       var targetOpt = photonRes.getTargets().stream()
       .filter(t -> t.getFiducialId() == AprilTagConstants.stageIDA ||
                    t.getFiducialId() == AprilTagConstants.stageIDB ||
-                   t.getFiducialId() == AprilTagConstants.stageIDC) //4 Red & 7 Blue) //Red 11,12,13 & Blue 14,15,16 - 12 & 12 face the amps
+                   t.getFiducialId() == AprilTagConstants.stageIDC) //Red 11,12,13 & Blue 14,15,16 - 12 & 12 face the amps
       .filter(t -> !t.equals(lastTarget) && t.getPoseAmbiguity() != -1)
       .findFirst();
       if (targetOpt.isPresent()) {
