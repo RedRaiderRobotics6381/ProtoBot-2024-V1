@@ -236,15 +236,21 @@ public class Robot extends TimedRobot
   }
 
   public static boolean watchForNote(){
-    var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
-    boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
-    if (hasTargets == true){
-      System.out.println("Note Found - Press and hold B to retrieve the note!");
-      LEDs.setLEDwBlink(.65, .125);
-     //RobotContainer.pulseRumble();
-    } else{
-      RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
+    boolean hasTargets = false;
+    //if (sensorIntake.get() == false && sensorOuttake.get() == false){
+      var result = camObj.getLatestResult(); //Get the latest result from PhotonVision
+      hasTargets = result.hasTargets(); // Check if the latest result has any targets.
+      if (hasTargets == true){
+        //System.out.println("Note Found - Press and hold B to retrieve the note!");
+       // LEDs.setLEDwBlink(.63, .125);
+        LEDs.setLED(.27); //.05
+        //RobotContainer.pulseRumble();
+      } else{
+        //RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
+        LEDs.setLED(.99);
+      //}
     }
     return hasTargets;
+
   }
 }
