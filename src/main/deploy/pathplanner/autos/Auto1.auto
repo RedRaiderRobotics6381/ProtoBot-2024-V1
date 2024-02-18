@@ -16,12 +16,6 @@
           "data": {
             "pathName": "Part1"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Part2"
-          }
         }
       ]
     }
