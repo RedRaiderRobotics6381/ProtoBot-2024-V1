@@ -1,6 +1,6 @@
 package frc.robot.commands.Vision;
 
-import org.photonvision.PhotonCamera;
+//import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.MathUtil;
@@ -19,15 +19,16 @@ public class DriveToObjectCmd extends Command
   private final PIDController   xController;
   private final PIDController   yController;
   private final PIDController   zController;
-  public static PhotonCamera camObj = new PhotonCamera("camObj");
+  //public static PhotonCamera camObj = new PhotonCamera("camObj");
 
 
   public DriveToObjectCmd(SwerveSubsystem swerveSubsystem)
   {
     this.swerveSubsystem = swerveSubsystem;
-    xController = new PIDController(.25, 0.01, 0.0001);
+    xController = new PIDController(0.055, 0.00, 0.0);
+    //xController = new PIDController(0.0625, 0.00375, 0.2);
     yController = new PIDController(0.0625, 0.00375, 0.0001);
-    zController = new PIDController(0.0575,0.0, 0.000);
+    zController = new PIDController(0.025,0.0, 0.000);
     xController.setTolerance(1);
     yController.setTolerance(1);
     zController.setTolerance(.5);
@@ -46,11 +47,11 @@ public class DriveToObjectCmd extends Command
   @Override
   public void initialize()
   {
-    camObj.setDriverMode(false);
+    //camObj.setDriverMode(false);
     //camAprTgHigh.setDriverMode(false);
     //camAprTgLow.setDriverMode(false);
     
-    camObj.setPipelineIndex(0);
+    //camObj.setPipelineIndex(0);
     //camAprTgHigh.setPipelineIndex(0);
 
   }
@@ -62,7 +63,8 @@ public class DriveToObjectCmd extends Command
   @Override
   public void execute()
   {
-    var result = camObj.getLatestResult();  // Get the latest result from PhotonVision
+    //var result = camObj.getLatestResult();  // Get the latest result from PhotonVision
+    var result = Robot.camObj.getLatestResult();  // Get the latest result from PhotonVision
     boolean hasTargets = result.hasTargets(); // Check if the latest result has any targets.
     PhotonTrackedTarget target = result.getBestTarget();
     
@@ -71,7 +73,7 @@ public class DriveToObjectCmd extends Command
       double TZ = target.getYaw();
       double TX = target.getPitch();
 
-      double translationValx = MathUtil.clamp(xController.calculate(TX, -16.5), -.5 , .5); //* throttle, 2.5 * throttle);
+      double translationValx = MathUtil.clamp(xController.calculate(TX, -18), -1.0 , 1.0); //* throttle, 2.5 * throttle);
       //double translationValy = MathUtil.clamp(yController.calculate(TY, 0.0), -.5 , .5); //* throttle, 2.5 * throttle);
       
       double translationValz = MathUtil.clamp(zController.calculate(TZ, 0.0), -2.0 , 2.0); //* throttle, 2.5 * throttle);
@@ -81,14 +83,21 @@ public class DriveToObjectCmd extends Command
       // SmartDashboard.putNumber("PhotonVision Pitch", TX);
       // SmartDashboard.putNumber("TranslationX", translationValX);
       // SmartDashboard.putNumber("TranslationY", translationValY);
+
+      if (xController.atSetpoint() != true) {
+        
+
+      
         swerveSubsystem.drive(new Translation2d(translationValx, 0.0),
         translationValz,
         false);
+      } 
   
     
 
-    }else{
-      swerveSubsystem.lock();
+    } else{
+      //swerveSubsystem.lock();
+
     }
   }
 

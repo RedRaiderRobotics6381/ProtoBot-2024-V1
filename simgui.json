@@ -30,7 +30,20 @@
       }
     }
   },
+  "NetworkTables": {
+    "retained": {
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  },
   "NetworkTables Info": {
+    "Connections": {
+      "open": true
+    },
+    "Server": {
+      "open": true
+    },
     "visible": true
   }
 }
