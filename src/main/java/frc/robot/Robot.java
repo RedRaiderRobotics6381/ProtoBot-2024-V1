@@ -243,7 +243,7 @@ public class Robot extends TimedRobot
       if (hasTargets == true){
         //System.out.println("Note Found - Press and hold B to retrieve the note!");
        // LEDs.setLEDwBlink(.63, .125);
-        LEDs.setLED(.27); //.05
+        LEDs.setLED(.23); //.05
         //RobotContainer.pulseRumble();
       } else{
         //RobotContainer.driverXbox.setRumble(RumbleType.kBothRumble, 0);
